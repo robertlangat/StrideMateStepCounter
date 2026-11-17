@@ -48,6 +48,15 @@ android {
     }
 
     signingConfigs {
+        // Shared TEST key (committed on purpose, public password "android") so every
+        // CI build has the same signature and can be installed over the previous one.
+        // Never use it for Play uploads; release builds use key.properties below.
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         create("release") {
             val storePath = signingValue("storeFile", "STRIDEMATE_KEYSTORE_PATH")
             if (storePath != null) {

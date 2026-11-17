@@ -19,23 +19,25 @@ jobs:
         with: { distribution: temurin, java-version: '17' }
       - uses: subosito/flutter-action@v2
         with: { channel: stable, flutter-version: '3.32.x', cache: true }
-      - name: Build debug APK
+      - name: Build test APK (optimised, signed with the shared test key)
         run: |
           flutter pub get
           if [ -n "${{ secrets.SUPABASE_URL }}" ]; then
-            flutter build apk --debug \
+            flutter build apk --release \
               --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
               --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
           else
-            flutter build apk --debug
+            flutter build apk --release
           fi
-          cp build/app/outputs/flutter-apk/app-debug.apk StrideMate-debug.apk
+          cp build/app/outputs/flutter-apk/app-release.apk StrideMate.apk
+          ls -lh StrideMate.apk
+          "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs StrideMate.apk | head -3 || true
       - name: Publish release "debug-latest"
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete debug-latest --yes --cleanup-tag || true
-          gh release create debug-latest StrideMate-debug.apk \
+          gh release create debug-latest StrideMate.apk \
             --prerelease --target "$GITHUB_SHA" \
-            --title "StrideMate debug APK (latest)" \
-            --notes "Debug build of ${GITHUB_SHA::7} from ${GITHUB_REF_NAME}. For testing only. Open this page on your Android phone, tap StrideMate-debug.apk, and allow installs from your browser when asked."
+            --title "StrideMate test APK (latest)" \
+            --notes "Test build of ${GITHUB_SHA::7} from ${GITHUB_REF_NAME} (Google test ads, shared test signing key; not for Play). Open this page on your Android phone, tap StrideMate.apk, and allow installs from your browser when asked. If an older StrideMate test build is installed and the install fails, uninstall it once first."
