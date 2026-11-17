@@ -2,19 +2,20 @@
 
 ## Build environment limits (read first)
 
-This code was written in an environment that could reach GitHub but **could not download the Flutter SDK, the Android SDK, pub packages, Gradle plugins or CocoaPods**, and could not read GitHub Actions logs. As a result:
+This code was written in an environment that could reach GitHub but **could not download the Flutter SDK, the Android SDK, pub packages, Gradle plugins or CocoaPods**. The Flutter app was therefore first compiled by **GitHub CI**. On 17 Nov 2026 the CI run for this branch passed every job ([run](https://github.com/robertlangat/StrideMateStepCounter/actions/runs/44050157089)):
 
-- The **Flutter app was never compiled here**, and the Dart unit tests were not run.
-  - All Dart sources passed a structural check (brackets, strings, interpolation) and a manual API review against the pinned package versions.
-  - Expect a short round of fixes on the first `flutter analyze` / `flutter build apk --debug`.
-- **No debug APK was produced here.** The CI workflow builds one on every push and uploads it as the `stridemate-debug-apk` artifact (Actions › CI › run › Artifacts). Locally, run `flutter build apk --debug`.
-- The **backend and the Android step-counter core were executed and tested** (see TEST_RESULTS.md).
+- database suite and 15,000-member load test on PostgreSQL 16,
+- Android step-counter JUnit tests,
+- `flutter pub get`, `flutter analyze` (no errors), Dart unit tests,
+- **`flutter build apk --debug`**: the installable APK is the `stridemate-debug-apk` artifact on that run page. It was built without Supabase secrets, so it runs in offline mode; add the `SUPABASE_URL` / `SUPABASE_ANON_KEY` repository secrets to get a backend-enabled APK.
+
+What has **not** been exercised anywhere yet is behaviour on real phones (below).
 
 ## Status by milestone
 
 | Milestone | Status |
 |---|---|
-| 1. Solo step tracking + history (phone sensor, Health Connect/HealthKit, offline store, de-dup, Today, History, goals, streaks) | Implemented. Android counter core **verified** (JDK tests). Flutter UI not compiled here. |
+| 1. Solo step tracking + history (phone sensor, Health Connect/HealthKit, offline store, de-dup, Today, History, goals, streaks) | Implemented. Android counter core **verified** (JDK tests); app compiles and the APK builds in CI. On-device checks pending. |
 | 2. Accounts + sync (email code sign-in, idempotent upload, restore on new device) | Implemented. Server **verified**; client sync core has unit tests (CI). |
 | 3. Groups + challenges (invites, roles, chat, cheers/taunts, moderation, leaderboards, Mystery Mode, CSV) | Implemented. Server **verified**, including a 15,000-member load test. |
 | 4. Widgets, recaps, rankings, bots, iOS | Implemented. Android widget and notification are native. iOS sources and widget are written, but the Xcode project must be generated on a Mac (`scripts/bootstrap_ios.sh`). |
@@ -28,10 +29,10 @@ This code was written in an environment that could reach GitHub but **could not 
 - Launcher icons generated from the supplied StrideMate artwork (all densities plus adaptive and monochrome).
 - Wearable sync paths checked against public sources, November 2026 (docs/WEARABLES.md).
 
-## Needs a computer with Flutter (first)
+## Next steps
 
-1. `flutter pub get && flutter analyze && flutter test`. Fix any compile issues the analyzer reports.
-2. `flutter build apk --debug` and install it on a device.
+1. Download `stridemate-debug-apk` from the CI run and install it on an Android phone (enable "install unknown apps").
+2. Create the Supabase project (docs/DEPLOYMENT.md), add the two secrets, and re-run CI for a backend-enabled APK.
 
 ## Needs a physical device
 

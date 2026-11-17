@@ -1,6 +1,6 @@
 # Test results
 
-Run on 17 Nov 2026 in the build environment: PostgreSQL 16.15, OpenJDK 21, Linux x86-64. Commands are in the README. CI (`.github/workflows/ci.yml`) re-runs all suites on every push.
+Run on 17 Nov 2026 in the build environment (PostgreSQL 16.15, OpenJDK 21, Linux x86-64), and again in GitHub CI on the same day, where the database suite, load test, step-logic tests, Dart unit tests and debug APK build all passed. Commands are in the README. CI (`.github/workflows/ci.yml`) re-runs all suites on every push.
 
 ## What was executed here, and what wasn't
 
@@ -9,8 +9,8 @@ Run on 17 Nov 2026 in the build environment: PostgreSQL 16.15, OpenJDK 21, Linux
 | Backend: migrations, RLS, RPCs, Mystery Mode, CSV, finality, privacy | SQL (`supabase/tests/*.sql`) | ✅ yes | **14/14 test groups pass** |
 | Large-group load test (15,000 synthetic members) | SQL | ✅ yes | **pass, timings below** |
 | Android step-counter core (reboots, resets, rollover, clock changes) | Java/JUnit (`android/app/src/test`) | ✅ yes, with the JDK | **10/10 pass** |
-| Dart unit tests: de-duplication, rollover, streaks, rest days, bots, recaps, sync retries | Dart (`test/`) | ❌ **not run**: no Flutter SDK available offline | runs in CI (`flutter test`) |
-| `flutter analyze` / Android debug APK build | — | ❌ **not run**: no Flutter/Android SDK | runs in CI; APK uploaded as an artifact |
+| Dart unit tests: de-duplication, rollover, streaks, rest days, bots, recaps, sync retries | Dart (`test/`) | ❌ no Flutter SDK offline; ✅ **passed in GitHub CI** (`TZ=Africa/Nairobi flutter test`) | pass |
+| `flutter analyze` + Android debug APK build | — | ❌ no SDK offline; ✅ **passed in GitHub CI** (Flutter 3.32, no analyzer errors, APK built) | APK artifact `stridemate-debug-apk` on [CI run](https://github.com/robertlangat/StrideMateStepCounter/actions/runs/44050157089) |
 | On-device behaviour (sensors, Health Connect, HealthKit, widgets, background) | — | ❌ needs physical devices | see HANDOVER.md |
 
 ## Backend suite: `scripts/test_db.sh --load`
@@ -103,7 +103,7 @@ The query plan for a leaderboard page is an **Index Only Scan** on `group_rankin
 10 passed, 0 failed
 ```
 
-## Dart unit tests (written, run in CI only)
+## Dart unit tests (run in GitHub CI: passed)
 
 | File | Covers |
 |---|---|

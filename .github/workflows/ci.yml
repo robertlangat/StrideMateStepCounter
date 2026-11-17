@@ -19,7 +19,7 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run migrations + tests + load test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
@@ -29,8 +29,8 @@ jobs:
     name: Android step-counter logic (JDK only)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: '17' }
       - run: scripts/test_step_logic.sh
 
@@ -38,8 +38,8 @@ jobs:
     name: Flutter analyze, unit tests, Android debug APK
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: '17' }
       - uses: subosito/flutter-action@v2
         with:

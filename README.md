@@ -2,7 +2,7 @@
 
 Walking is better together. StrideMate is a free Flutter app for Android and iOS. It counts steps privately on the phone and adds private groups, chat, leaderboards and step challenges (including Mystery Mode) on a Supabase/PostgreSQL backend. There are no subscriptions or paywalls, and no account is needed to start counting.
 
-> **Status:** see [docs/HANDOVER.md](docs/HANDOVER.md). The backend and the Android step-counter core are tested (see [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md)). The Flutter app was written without access to the Flutter SDK, so its first compile happens in CI or on your machine.
+> **Status:** backend, Android step-counter core and Dart unit tests pass, and CI builds the debug APK (see [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md)). On-device verification and the iOS Xcode project are still to do: [docs/HANDOVER.md](docs/HANDOVER.md).
 
 ## Features
 
