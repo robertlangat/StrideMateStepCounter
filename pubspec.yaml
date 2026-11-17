@@ -1,0 +1,50 @@
+name: stridemate
+description: StrideMate – Step Counter. Walk together with friends, family, coworkers and clubs. Free, no subscriptions.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.27.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  supabase_flutter: ^2.8.4
+  sqflite: ^2.4.1
+  path: ^1.9.0
+  shared_preferences: ^2.3.3
+  health: ^11.1.1
+  permission_handler: ^11.3.1
+  fl_chart: ^0.70.2
+  home_widget: ^0.7.0
+  share_plus: ^10.1.4
+  image_picker: ^1.1.2
+  path_provider: ^2.1.5
+  url_launcher: ^6.3.1
+  connectivity_plus: ^6.1.1
+  uuid: ^4.5.1
+  intl: ">=0.19.0 <0.21.0"
+  flutter_timezone: ^3.0.1
+  package_info_plus: ^8.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.2
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/branding/
+
+# Regenerate launcher icons from the StrideMate artwork:
+#   dart run flutter_launcher_icons
+# (Committed Android icons were generated from the same file; iOS icons are
+#  produced by this command on a Mac after `scripts/bootstrap_ios.sh`.)
+flutter_launcher_icons:
+  android: false
+  ios: true
+  image_path: "assets/branding/icon_1024.png"
+  remove_alpha_ios: true
