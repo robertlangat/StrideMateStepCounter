@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  database:
+    name: Database tests (PostgreSQL 16, 15k-member load test)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run migrations + tests + load test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        run: scripts/test_db.sh --load
+
+  step-logic:
+    name: Android step-counter logic (JDK only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - run: scripts/test_step_logic.sh
+
+  flutter:
+    name: Flutter analyze, unit tests, Android debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.32.x'
+          cache: true
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Unit tests (non-UTC zone to exercise day boundaries)
+        run: TZ=Africa/Nairobi flutter test --reporter expanded
+      - name: Build debug APK
+        run: |
+          if [ -n "${{ secrets.SUPABASE_URL }}" ]; then
+            flutter build apk --debug \
+              --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+              --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          else
+            flutter build apk --debug   # offline build: step tracking only, social features disabled
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stridemate-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
