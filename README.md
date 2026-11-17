@@ -74,7 +74,7 @@ cp config/dart_defines.example.json config/dart_defines.json   # fill in values 
 flutter run --dart-define-from-file=config/dart_defines.json
 ```
 
-Without `SUPABASE_URL` / `SUPABASE_ANON_KEY` the app runs in **offline mode**. Step tracking, history, goals, bots and recaps all work; social features show a "no backend configured" message.
+Without `SUPABASE_URL` / `SUPABASE_ANON_KEY` the app runs in **offline mode**. Step tracking, history, goals, bots and recaps all work, and the Groups and Challenges tabs are hidden (the app shows Today, History and Profile). They appear automatically in a build with the backend configured.
 
 ### Environment variables (`--dart-define`)
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'config/app_config.dart';
 import 'core/services.dart';
 import 'features/challenges/challenges_screen.dart';
 import 'features/groups/groups_screen.dart';
@@ -70,7 +71,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
       final code = uri.scheme == 'stridemate' && uri.host == 'join'
           ? (segments.isNotEmpty ? segments.first : null)
           : (segments.length >= 2 && segments[segments.length - 2] == 'join' ? segments.last : null);
-      if (code != null) {
+      if (code != null && AppConfig.backendConfigured) {
         HomeShell.pendingInviteCode.value = code.toUpperCase();
         HomeShell.tabIndex.value = 1;
       }
@@ -96,27 +97,39 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  /// Groups and Challenges need the StrideMate server. In a build without
+  /// SUPABASE_URL / SUPABASE_ANON_KEY they are left out entirely, and come back
+  /// automatically in a build that has the backend configured.
+  static final _tabs = <(Widget, NavigationDestination)>[
+    (const TodayScreen(),
+        const NavigationDestination(icon: Icon(Icons.directions_walk_outlined), selectedIcon: Icon(Icons.directions_walk), label: 'Today')),
+    if (AppConfig.backendConfigured) ...[
+      (const GroupsScreen(),
+          const NavigationDestination(icon: Icon(Icons.groups_outlined), selectedIcon: Icon(Icons.groups), label: 'Groups')),
+      (const ChallengesScreen(),
+          const NavigationDestination(icon: Icon(Icons.emoji_events_outlined), selectedIcon: Icon(Icons.emoji_events), label: 'Challenges')),
+    ],
+    (const HistoryScreen(),
+        const NavigationDestination(icon: Icon(Icons.bar_chart_outlined), selectedIcon: Icon(Icons.bar_chart), label: 'History')),
+    (const ProfileScreen(),
+        const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile')),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: HomeShell.tabIndex,
-      builder: (context, index, _) => Scaffold(
-        body: IndexedStack(
-          index: index,
-          children: const [TodayScreen(), GroupsScreen(), ChallengesScreen(), HistoryScreen(), ProfileScreen()],
-        ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: index,
-          onDestinationSelected: (i) => HomeShell.tabIndex.value = i,
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.directions_walk_outlined), selectedIcon: Icon(Icons.directions_walk), label: 'Today'),
-            NavigationDestination(icon: Icon(Icons.groups_outlined), selectedIcon: Icon(Icons.groups), label: 'Groups'),
-            NavigationDestination(icon: Icon(Icons.emoji_events_outlined), selectedIcon: Icon(Icons.emoji_events), label: 'Challenges'),
-            NavigationDestination(icon: Icon(Icons.bar_chart_outlined), selectedIcon: Icon(Icons.bar_chart), label: 'History'),
-            NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
-          ],
-        ),
-      ),
+      builder: (context, index, _) {
+        final safeIndex = index.clamp(0, _tabs.length - 1);
+        return Scaffold(
+          body: IndexedStack(index: safeIndex, children: [for (final t in _tabs) t.$1]),
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: safeIndex,
+            onDestinationSelected: (i) => HomeShell.tabIndex.value = i,
+            destinations: [for (final t in _tabs) t.$2],
+          ),
+        );
+      },
     );
   }
 }
