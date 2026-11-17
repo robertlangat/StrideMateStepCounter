@@ -99,6 +99,11 @@
                 android:resource="@xml/step_widget_info" />
         </receiver>
 
+        <!-- AdMob app ID. Defaults to Google's test app ID; see build.gradle.kts. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
         <meta-data android:name="flutterEmbedding" android:value="2" />
     </application>
 </manifest>

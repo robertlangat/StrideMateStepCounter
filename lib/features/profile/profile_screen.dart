@@ -32,16 +32,11 @@ class ProfileScreen extends StatelessWidget {
           final s = services.settings;
           final profile = auth.profile;
           return ListView(padding: const EdgeInsets.all(16), children: [
+            // Accounts need the StrideMate server; without it the section is omitted.
+            if (auth.available) ...[
             _section(context, 'Account'),
             Card(
-              child: !auth.available
-                  ? const ListTile(
-                      leading: Icon(Icons.cloud_off),
-                      title: Text('Offline build'),
-                      subtitle: Text('No StrideMate server is configured, so sync and social features are off. '
-                          'Step counting, history, goals and bots all work.'),
-                    )
-                  : !auth.signedIn
+              child: !auth.signedIn
                       ? ListTile(
                           leading: const Icon(Icons.login),
                           title: const Text('Sign in or create a free account'),
@@ -72,6 +67,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ]),
             ),
+            ],
             _section(context, 'Goals'),
             Card(
               child: Column(children: [

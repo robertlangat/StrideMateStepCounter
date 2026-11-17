@@ -37,5 +37,6 @@ Terms: {TERMS_URL} · Privacy Policy: {PRIVACY_URL}
 **Notes for submission**
 
 - Keep these placeholders until the real values are provided. Don't mention other apps, their contact details, or any user-count claims.
+- The app contains ads (AdMob banner): tick **Contains ads** in Play Console and declare the advertising ID in Data safety.
 - Calorie figures are estimates; keep the wording "estimated".
 - Only name a wearable brand in marketing after it passes the device checklist in WEARABLES.md.

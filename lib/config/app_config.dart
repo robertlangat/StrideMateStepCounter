@@ -19,6 +19,22 @@ class AppConfig {
   /// Public web page that forwards to stridemate://join/CODE (optional).
   static String get inviteBaseUrl => _inviteBaseUrl.isEmpty ? 'https://stridemate.example/join' : _inviteBaseUrl;
 
+  // ---- AdMob ------------------------------------------------------------------
+  // Defaults are Google's official TEST ad units, which always serve test ads and
+  // are safe to tap. Replace them with your own units only for release builds
+  // (ADMOB_BANNER_ANDROID / ADMOB_BANNER_IOS). The AdMob *app* IDs live in
+  // android/app/build.gradle.kts (ADMOB_APP_ID_ANDROID) and ios/Runner/Info.plist.
+  static const _adsEnabled = String.fromEnvironment('ADS_ENABLED', defaultValue: 'true');
+  static const _bannerAndroid = String.fromEnvironment('ADMOB_BANNER_ANDROID');
+  static const _bannerIos = String.fromEnvironment('ADMOB_BANNER_IOS');
+
+  static bool get adsEnabled => _adsEnabled.toLowerCase() != 'false';
+  static String get bannerAdUnitAndroid =>
+      _bannerAndroid.isEmpty ? 'ca-app-pub-3940256099942544/9214589741' : _bannerAndroid; // test adaptive banner
+  static String get bannerAdUnitIos =>
+      _bannerIos.isEmpty ? 'ca-app-pub-3940256099942544/2435281174' : _bannerIos; // test adaptive banner
+  static bool get usingTestAds => _bannerAndroid.isEmpty && _bannerIos.isEmpty;
+
   static bool get backendConfigured => supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
   static bool get placeholdersInUse =>
       supportEmail.endsWith('.example') || termsUrl.contains('.example') || privacyUrl.contains('.example');

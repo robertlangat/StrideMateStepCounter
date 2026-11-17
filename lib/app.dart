@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'ads/ad_banner.dart';
 import 'config/app_config.dart';
 import 'core/services.dart';
 import 'features/challenges/challenges_screen.dart';
@@ -123,10 +124,16 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
         final safeIndex = index.clamp(0, _tabs.length - 1);
         return Scaffold(
           body: IndexedStack(index: safeIndex, children: [for (final t in _tabs) t.$1]),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: safeIndex,
-            onDestinationSelected: (i) => HomeShell.tabIndex.value = i,
-            destinations: [for (final t in _tabs) t.$2],
+          bottomNavigationBar: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (AppConfig.adsEnabled) const AdBanner(),
+              NavigationBar(
+                selectedIndex: safeIndex,
+                onDestinationSelected: (i) => HomeShell.tabIndex.value = i,
+                destinations: [for (final t in _tabs) t.$2],
+              ),
+            ],
           ),
         );
       },

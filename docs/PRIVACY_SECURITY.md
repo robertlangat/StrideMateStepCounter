@@ -12,6 +12,14 @@
 - **No location** is requested or stored. Country is chosen from a list.
 - Android backup and device transfer are excluded (`data_extraction_rules.xml`), so health data is not copied to Google Drive backups.
 
+## Advertising
+
+- StrideMate shows AdMob banner ads (test ads by default).
+- Ad requests never include step counts, health-platform data, goals or group information. This is required by Google Play's Health Connect policy, and it is also a StrideMate rule.
+- The Google Mobile Ads SDK collects the advertising ID and device information. Declare this in Play's **Data safety** form and mark the listing **Contains ads**.
+- Before showing personalised ads in the EEA/UK/Switzerland, add a consent flow (Google's User Messaging Platform) and publish the GDPR message in AdMob › Privacy & messaging. Not implemented yet.
+- On iOS, App Tracking Transparency is not requested, so iOS ads are not personalised.
+
 ## Server-side enforcement
 
 - **Every table has Row Level Security.**

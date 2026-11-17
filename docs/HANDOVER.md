@@ -57,6 +57,8 @@ What has **not** been exercised anywhere yet is behaviour on real phones (below)
 | Android upload keystore + passwords | `android/key.properties` (git-ignored) or CI secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Signed release AAB |
 | Google Play Console: Health Connect declaration (READ_STEPS, READ_HEALTH_DATA_HISTORY), foreground-service "health" declaration, Data safety form | Play Console | Play review |
 | Apple Developer team, bundle id `com.stridemate.app`, HealthKit + App Groups (`group.com.stridemate.app`) capabilities | Xcode / developer portal | iOS build, HealthKit, widget |
+| AdMob app ID + banner unit IDs (Android, iOS) | `ADMOB_APP_ID_ANDROID` gradle property/env, `ADMOB_BANNER_ANDROID` / `ADMOB_BANNER_IOS` defines, `GADApplicationIdentifier` in Info.plist | Real ads. Google's test IDs are used until then. |
+| AdMob consent message (UMP) for EEA/UK users; Play "Contains ads" + Data safety (advertising ID) | AdMob console, Play Console | Releasing with real ads |
 | Optional: FCM + APNs keys and a webhook to send pushes for `notifications` rows | Firebase / Apple / Supabase | Push delivery of cheers and results (in-app inbox works without it) |
 | Optional: domain for invite links (`INVITE_BASE_URL`) and App Links / Universal Links files | Your web host | Tappable https invite links |
 | Optional: vendor API credentials (Fitbit/Google, Garmin Health, Oura, WHOOP, Withings) | — | Direct integrations; not implemented, as health platforms already cover them |
