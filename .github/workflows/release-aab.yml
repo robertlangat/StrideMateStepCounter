@@ -1,0 +1,39 @@
+name: Release AAB (manual)
+
+on:
+  workflow_dispatch:
+
+# Required repository secrets (never commit these):
+#   ANDROID_KEYSTORE_BASE64   base64 of your upload keystore (.jks)
+#   ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+#   SUPABASE_URL, SUPABASE_ANON_KEY
+#   SUPPORT_EMAIL, TERMS_URL, PRIVACY_URL (optional; placeholders are used otherwise)
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: '17' }
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, flutter-version: '3.32.x', cache: true }
+      - name: Restore keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/upload.jks"
+      - name: Build signed AAB
+        env:
+          STRIDEMATE_KEYSTORE_PATH: ${{ runner.temp }}/upload.jks
+          STRIDEMATE_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          STRIDEMATE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          STRIDEMATE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          flutter pub get
+          flutter build appbundle --release \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            --dart-define=SUPPORT_EMAIL=${{ secrets.SUPPORT_EMAIL }} \
+            --dart-define=TERMS_URL=${{ secrets.TERMS_URL }} \
+            --dart-define=PRIVACY_URL=${{ secrets.PRIVACY_URL }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stridemate-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab

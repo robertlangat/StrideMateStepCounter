@@ -1,0 +1,33 @@
+# Supabase CLI project config (used by `supabase start` / `supabase db push`).
+project_id = "stridemate"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[realtime]
+enabled = true
+
+[auth]
+enabled = true
+site_url = "stridemate://auth"
+additional_redirect_urls = []
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+# The app signs in with a 6-digit email code (verifyOTP). Keep OTP length 6.
+otp_length = 6
+otp_expiry = 3600
+
+[auth.rate_limit]
+email_sent = 30
