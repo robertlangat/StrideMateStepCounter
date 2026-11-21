@@ -11,8 +11,7 @@ Walking is better together. StrideMate is a free Flutter app for Android and iOS
   - distance and *estimated* calories,
   - last-updated and last-sync time,
   - clear banners when a sensor, permission or data source is unavailable,
-  - streak and Rest Day chips,
-  - Chill / Active / Yesterday walking bots, clearly labelled.
+  - streak and Rest Day chips.
 - **History**:
   - day (hourly), week, month and year views,
   - accessible charts (spoken summary, goal shown by colour *and* ✓, table view),

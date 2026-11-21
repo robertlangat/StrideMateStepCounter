@@ -10,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_config.dart';
 import '../../core/services.dart';
 import '../../data/remote/api.dart';
-import '../../domain/bots.dart';
 import '../../domain/countries.dart';
 import '../../widgets/common.dart';
 import 'auth_screen.dart';
@@ -115,30 +114,6 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => _push(context, const SourcesScreen()),
               ),
             ),
-            _section(context, 'Walking bots'),
-            Card(
-              child: Column(children: [
-                SwitchListTile(
-                  title: const Text('Show bots on Today'),
-                  subtitle: const Text('Personal practice opponents. Never in group or global rankings.'),
-                  value: s.showBots,
-                  onChanged: (v) => s.showBots = v,
-                ),
-                for (final b in bots)
-                  CheckboxListTile(
-                    title: Text('${b.emoji}  ${b.name}'),
-                    subtitle: Text(b.description),
-                    value: s.enabledBots.contains(b.kind.name),
-                    onChanged: !s.showBots
-                        ? null
-                        : (v) {
-                            final set = {...s.enabledBots};
-                            v == true ? set.add(b.kind.name) : set.remove(b.kind.name);
-                            s.enabledBots = set;
-                          },
-                  ),
-              ]),
-            ),
             if (auth.signedIn) ...[
               _section(context, 'Privacy'),
               Card(
@@ -153,7 +128,7 @@ class ProfileScreen extends StatelessWidget {
                   SwitchListTile(
                     title: const Text('Join country & global rankings'),
                     subtitle: const Text('Opt-in. Shows your display name, country and step totals to other '
-                        'StrideMate users. Bots are never ranked.'),
+                        'StrideMate users.'),
                     value: (profile?['global_rankings_opt_in'] as bool?) ?? false,
                     onChanged: (v) => _update(context, {'global_rankings_opt_in': v}),
                   ),

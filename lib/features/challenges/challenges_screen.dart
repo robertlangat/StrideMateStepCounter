@@ -45,16 +45,12 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
           child: ListTile(
             leading: const Text('🌍', style: TextStyle(fontSize: 28)),
             title: const Text('Country & global rankings'),
-            subtitle: const Text('Opt-in rankings of real walkers. Bots never appear here.'),
+            subtitle: const Text('Opt-in rankings of real walkers.'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => services.auth.signedIn
                 ? Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GlobalRankingsScreen()))
                 : Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AuthScreen())),
           ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text('Personal challenges against Chill Bot, Active Bot and Yesterday Bot are on the Today tab.'),
         ),
         const SizedBox(height: 8),
         if (!services.auth.signedIn)

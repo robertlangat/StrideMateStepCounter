@@ -7,7 +7,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../core/services.dart';
 import '../../data/sources/health_source.dart';
 import '../../data/sources/phone_source.dart';
-import '../../domain/bots.dart';
 import '../../domain/goals.dart';
 import '../profile/sources_screen.dart';
 import '../../widgets/common.dart';
@@ -83,8 +82,6 @@ class _TodayScreenState extends State<TodayScreen> {
                     ),
                   if (isRest) const Chip(avatar: Text('🛌'), label: Text('Rest Day — streak protected')),
                 ]),
-                const SizedBox(height: 16),
-                if (services.settings.showBots) _BotsCard(steps: steps),
               ],
             ),
           );
@@ -209,76 +206,3 @@ class _SyncLine extends StatelessWidget {
     return Text(text, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall);
   }
 }
-
-class _BotsCard extends StatelessWidget {
-  const _BotsCard({required this.steps});
-  final int steps;
-
-  @override
-  Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final enabled = services.settings.enabledBots;
-    final yesterday = yesterdayBotSteps(
-      nowLocal: now,
-      effectiveHourly: services.steps.recentEffectiveHourly,
-      trackingSince: DateTime.fromMillisecondsSinceEpoch(services.settings.trackingSinceMs),
-    );
-    final rows = <Widget>[];
-    for (final b in bots) {
-      if (!enabled.contains(b.kind.name)) continue;
-      final int? botSteps = switch (b.kind) {
-        BotKind.chill => chillBotSteps(now),
-        BotKind.active => activeBotSteps(now),
-        BotKind.yesterday => yesterday,
-      };
-      final diff = botSteps == null ? null : steps - botSteps;
-      rows.add(ListTile(
-        leading: Text(b.emoji, style: const TextStyle(fontSize: 28)),
-        title: Row(children: [
-          Text(b.name),
-          const SizedBox(width: 6),
-          const _BotTag(),
-        ]),
-        subtitle: Text(botSteps == null
-            ? 'Not enough history yet — check back tomorrow.'
-            : '${fmtInt(botSteps)} steps by now · ${b.description}'),
-        trailing: diff == null
-            ? null
-            : Text(diff >= 0 ? '+${fmtInt(diff)}' : fmtInt(diff),
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: diff >= 0 ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.error,
-                )),
-      ));
-    }
-    if (rows.isEmpty) return const SizedBox.shrink();
-    return Card(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Text('You vs the walking bots', style: Theme.of(context).textTheme.titleMedium),
-        ),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
-          child: Text('Virtual competitors for personal challenges. Bots never appear in group or global rankings.'),
-        ),
-        ...rows,
-      ]),
-    );
-  }
-}
-
-class _BotTag extends StatelessWidget {
-  const _BotTag();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outline),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Text('BOT', style: Theme.of(context).textTheme.labelSmall),
-      );
-}
-
