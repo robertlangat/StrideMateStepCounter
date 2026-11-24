@@ -90,20 +90,16 @@ Without `SUPABASE_URL` / `SUPABASE_ANON_KEY` the app runs in **offline mode**. S
 
 ### Ads (AdMob)
 
-The app shows an anchored adaptive banner above the bottom navigation bar, using `google_mobile_ads`. Out of the box it uses **Google's official test IDs**, so only test ads appear and they are safe to tap:
+- The app shows an anchored adaptive banner above the bottom navigation bar.
+- It also shows an interstitial on natural breaks: opening Recaps or Achievements, never in the first 2 minutes of a session, and at most once every 4 minutes.
 
-| | Android | iOS |
-|---|---|---|
-| App ID | `ca-app-pub-3940256099942544~3347511713` | `ca-app-pub-3940256099942544~1458002511` |
-| Banner unit | `ca-app-pub-3940256099942544/9214589741` | `ca-app-pub-3940256099942544/2435281174` |
+| Build | Ads |
+|---|---|
+| Play Store release (`flutter build appbundle --release`) | **Real StrideMate units**: app `ca-app-pub-8306955081407788~5196832723`, banner `…/1308277343`, interstitial `…/1257587713` |
+| Debug builds and the sideloaded test APK (`--dart-define=USE_TEST_ADS=true`) | Google's test units (safe to tap) |
+| iOS | Google's test units until real iOS units are created |
 
-For a release with real ads:
-
-1. Create the app and a banner unit in AdMob.
-2. Pass the app ID as `-PADMOB_APP_ID_ANDROID=ca-app-pub-…~…` (or the `ADMOB_APP_ID_ANDROID` env var) and the unit ID as `--dart-define=ADMOB_BANNER_ANDROID=…`.
-3. For iOS, set `GADApplicationIdentifier` in `ios/Runner/Info.plist`.
-
-Never test with your real units on your own phone: AdMob can suspend accounts for self-clicks. Ad requests contain no step or health data.
+Never tap real ads on your own devices; use the test APK for testing. Ad requests contain no step or health data.
 
 Backend setup (migrations, pg_cron, auth email code template): [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
