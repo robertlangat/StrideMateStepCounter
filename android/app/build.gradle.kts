@@ -19,7 +19,7 @@ fun signingValue(key: String, env: String): String? =
 
 android {
     namespace = "com.stridemate.app"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -36,15 +36,15 @@ android {
         applicationId = "com.stridemate.app"
         // Health Connect client requires API 26+.
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        // AdMob app ID: Google's TEST app ID unless ADMOB_APP_ID_ANDROID is set
-        // (gradle property or environment variable) for a release build.
+        // StrideMate's AdMob app ID (overridable with ADMOB_APP_ID_ANDROID).
+        // Test builds still request Google's test ad units, see AppConfig.
         manifestPlaceholders["admobAppId"] =
             (project.findProperty("ADMOB_APP_ID_ANDROID") as String?)
                 ?: System.getenv("ADMOB_APP_ID_ANDROID")?.takeIf { it.isNotBlank() }
-                ?: "ca-app-pub-3940256099942544~3347511713"
+                ?: "ca-app-pub-8306955081407788~5196832723"
     }
 
     signingConfigs {

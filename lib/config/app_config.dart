@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+
 /// Build-time configuration (pass with --dart-define or --dart-define-from-file).
 /// Nothing secret lives here: the Supabase anon key is public by design and every
 /// table is protected by Row Level Security + server-side RPC checks.
@@ -20,20 +24,34 @@ class AppConfig {
   static String get inviteBaseUrl => _inviteBaseUrl.isEmpty ? 'https://stridemate.example/join' : _inviteBaseUrl;
 
   // ---- AdMob ------------------------------------------------------------------
-  // Defaults are Google's official TEST ad units, which always serve test ads and
-  // are safe to tap. Replace them with your own units only for release builds
-  // (ADMOB_BANNER_ANDROID / ADMOB_BANNER_IOS). The AdMob *app* IDs live in
-  // android/app/build.gradle.kts (ADMOB_APP_ID_ANDROID) and ios/Runner/Info.plist.
+  // Release builds use StrideMate's real AdMob units. Debug builds, and the
+  // sideloaded test APK (built with --dart-define=USE_TEST_ADS=true), use Google's
+  // official TEST units so nobody taps real ads on their own phone (AdMob can
+  // suspend accounts for that). The AdMob *app* ID is set in
+  // android/app/build.gradle.kts and ios/Runner/Info.plist.
   static const _adsEnabled = String.fromEnvironment('ADS_ENABLED', defaultValue: 'true');
-  static const _bannerAndroid = String.fromEnvironment('ADMOB_BANNER_ANDROID');
-  static const _bannerIos = String.fromEnvironment('ADMOB_BANNER_IOS');
+  static const _forceTestAds = bool.fromEnvironment('USE_TEST_ADS');
 
   static bool get adsEnabled => _adsEnabled.toLowerCase() != 'false';
-  static String get bannerAdUnitAndroid =>
-      _bannerAndroid.isEmpty ? 'ca-app-pub-3940256099942544/9214589741' : _bannerAndroid; // test adaptive banner
-  static String get bannerAdUnitIos =>
-      _bannerIos.isEmpty ? 'ca-app-pub-3940256099942544/2435281174' : _bannerIos; // test adaptive banner
-  static bool get usingTestAds => _bannerAndroid.isEmpty && _bannerIos.isEmpty;
+  static bool get usingTestAds => _forceTestAds || kDebugMode;
+
+  // Real StrideMate units (Android).
+  static const _realBannerAndroid = 'ca-app-pub-8306955081407788/1308277343';
+  static const _realInterstitialAndroid = 'ca-app-pub-8306955081407788/1257587713';
+
+  // Google test units.
+  static const _testBannerAndroid = 'ca-app-pub-3940256099942544/9214589741';
+  static const _testInterstitialAndroid = 'ca-app-pub-3940256099942544/1033173712';
+  static const _testBannerIos = 'ca-app-pub-3940256099942544/2435281174';
+  static const _testInterstitialIos = 'ca-app-pub-3940256099942544/4411468910';
+
+  static String get bannerAdUnit => Platform.isIOS
+      ? _testBannerIos // no real iOS units yet
+      : (usingTestAds ? _testBannerAndroid : _realBannerAndroid);
+
+  static String get interstitialAdUnit => Platform.isIOS
+      ? _testInterstitialIos // no real iOS units yet
+      : (usingTestAds ? _testInterstitialAndroid : _realInterstitialAndroid);
 
   static bool get backendConfigured => supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
   static bool get placeholdersInUse =>

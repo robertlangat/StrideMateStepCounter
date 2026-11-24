@@ -8,15 +8,74 @@ import '../config/app_config.dart';
 /// Initialises the Mobile Ads SDK once. Safe to call without awaiting.
 class Ads {
   static bool _started = false;
+  static final DateTime _sessionStart = DateTime.now();
+  static DateTime? _lastInterstitial;
+  static InterstitialAd? _interstitial;
+  static bool _loading = false;
+
+  /// Interstitials are shown only on natural breaks (opening Recaps or
+  /// Achievements), never in the first 2 minutes of a session and at most once
+  /// every 4 minutes.
+  static const firstShowDelay = Duration(minutes: 2);
+  static const minInterval = Duration(minutes: 4);
+
+  static bool get _supported => AppConfig.adsEnabled && (Platform.isAndroid || Platform.isIOS);
 
   static Future<void> init() async {
-    if (_started || !AppConfig.adsEnabled || !(Platform.isAndroid || Platform.isIOS)) return;
+    if (_started || !_supported) return;
     _started = true;
     try {
       await MobileAds.instance.initialize();
+      _loadInterstitial();
     } catch (_) {
       // Ads are optional: never block or crash the app.
     }
+  }
+
+  static void _loadInterstitial() {
+    if (_loading || _interstitial != null || !_supported) return;
+    _loading = true;
+    InterstitialAd.load(
+      adUnitId: AppConfig.interstitialAdUnit,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _loading = false;
+          _interstitial = ad;
+        },
+        onAdFailedToLoad: (error) {
+          _loading = false;
+          _interstitial = null;
+        },
+      ),
+    );
+  }
+
+  /// Shows a preloaded interstitial if the frequency cap allows. Never waits
+  /// for an ad: if none is ready, the user continues straight away.
+  static void maybeShowInterstitial() {
+    if (!_supported) return;
+    final now = DateTime.now();
+    final ad = _interstitial;
+    if (ad == null) {
+      _loadInterstitial();
+      return;
+    }
+    if (now.difference(_sessionStart) < firstShowDelay) return;
+    if (_lastInterstitial != null && now.difference(_lastInterstitial!) < minInterval) return;
+    _interstitial = null;
+    _lastInterstitial = now;
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _loadInterstitial();
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        ad.dispose();
+        _loadInterstitial();
+      },
+    );
+    ad.show();
   }
 }
 
@@ -52,7 +111,7 @@ class _AdBannerState extends State<AdBanner> {
     final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
     if (size == null || !mounted) return;
     final ad = BannerAd(
-      adUnitId: Platform.isIOS ? AppConfig.bannerAdUnitIos : AppConfig.bannerAdUnitAndroid,
+      adUnitId: AppConfig.bannerAdUnit,
       size: size,
       request: const AdRequest(),
       listener: BannerAdListener(

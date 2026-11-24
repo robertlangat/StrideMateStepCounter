@@ -1,0 +1,38 @@
+name: Build Play bundle
+
+# Builds the release Android App Bundle with StrideMate's real AdMob units.
+# It is signed here only with the shared TEST key; the owner re-signs it with
+# the private upload key (kept outside this repository) before uploading to Play.
+on:
+  push:
+    branches: [main, 'feature/**']
+    paths: ['lib/**', 'android/**', 'pubspec.yaml', 'assets/**', '.github/workflows/play-bundle.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: '17' }
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable, flutter-version: '3.32.x', cache: true }
+      - name: Build release AAB (real ads)
+        run: |
+          flutter pub get
+          flutter build appbundle --release
+          cp build/app/outputs/bundle/release/app-release.aab StrideMate-unsigned-for-upload.aab
+          ls -lh StrideMate-unsigned-for-upload.aab
+      - name: Publish build output
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete play-bundle-build --yes --cleanup-tag || true
+          gh release create play-bundle-build StrideMate-unsigned-for-upload.aab \
+            --prerelease --target "$GITHUB_SHA" \
+            --title "Play bundle build output (not for upload as-is)" \
+            --notes "Intermediate build of ${GITHUB_SHA::7}. Must be re-signed with the private upload key before uploading to Google Play."

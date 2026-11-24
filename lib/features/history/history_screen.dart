@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../ads/ad_banner.dart';
 import '../../core/services.dart';
 import '../../domain/day_key.dart';
 import '../../domain/goals.dart';
@@ -148,12 +149,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
         IconButton(
           tooltip: 'Recaps',
           icon: const Icon(Icons.auto_awesome),
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RecapScreen())),
+          onPressed: () {
+            Ads.maybeShowInterstitial();
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RecapScreen()));
+          },
         ),
         IconButton(
           tooltip: 'Achievements and records',
           icon: const Icon(Icons.military_tech_outlined),
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AchievementsScreen())),
+          onPressed: () {
+            Ads.maybeShowInterstitial();
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AchievementsScreen()));
+          },
         ),
       ]),
       body: ListView(

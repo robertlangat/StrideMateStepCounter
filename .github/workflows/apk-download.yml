@@ -23,11 +23,11 @@ jobs:
         run: |
           flutter pub get
           if [ -n "${{ secrets.SUPABASE_URL }}" ]; then
-            flutter build apk --release \
+            flutter build apk --release --dart-define=USE_TEST_ADS=true \
               --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
               --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
           else
-            flutter build apk --release
+            flutter build apk --release --dart-define=USE_TEST_ADS=true
           fi
           cp build/app/outputs/flutter-apk/app-release.apk StrideMate.apk
           ls -lh StrideMate.apk
