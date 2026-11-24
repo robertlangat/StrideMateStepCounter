@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../config/app_config.dart';
 import '../data/auth_service.dart';
+import 'demo_data.dart';
 import '../data/local_db.dart';
 import '../data/remote/api.dart';
 import '../data/settings_store.dart';
@@ -36,6 +37,7 @@ class Services {
   static Future<Services> create() async {
     final settings = await SettingsStore.load();
     final db = await LocalDb.open();
+    if (AppConfig.demoMode) await seedDemoData(db, settings);
     await WidgetBridge.init();
     final phone = PhoneStepSource();
     final steps = StepRepository(db: db, settings: settings, phone: phone, health: HealthStepSource());

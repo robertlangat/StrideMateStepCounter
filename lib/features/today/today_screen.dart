@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../config/app_config.dart';
 import '../../core/services.dart';
 import '../../data/sources/health_source.dart';
 import '../../data/sources/phone_source.dart';
@@ -93,6 +94,7 @@ class _TodayScreenState extends State<TodayScreen> {
   List<Widget> _banners(BuildContext context) {
     final repo = services.steps;
     final out = <Widget>[];
+    if (AppConfig.demoMode) return out; // screenshot builds run on an emulator without sensors
     switch (repo.phoneState) {
       case PhoneSensorState.permissionNeeded:
         out.add(StatusBanner(

@@ -53,6 +53,9 @@ class AppConfig {
       ? _testInterstitialIos // no real iOS units yet
       : (usingTestAds ? _testInterstitialAndroid : _realInterstitialAndroid);
 
+  /// Seeds sample data for store screenshots only (see lib/core/demo_data.dart).
+  static const demoMode = bool.fromEnvironment('DEMO_DATA');
+
   static bool get backendConfigured => supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
   static bool get placeholdersInUse =>
       supportEmail.endsWith('.example') || termsUrl.contains('.example') || privacyUrl.contains('.example');
