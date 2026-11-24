@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="live_channel_name">Live step count</string>
+    <string name="live_channel_description">Ongoing notification with today\'s steps while live counting is on.</string>
+    <string name="live_notification_title">%1$s steps today</string>
+    <string name="live_notification_text">Goal %1$s · updated %2$s</string>
+    <string name="widget_label">StrideMate steps</string>
+    <string name="widget_goal">of %1$s</string>
+    <string name="widget_updated">Updated %1$s</string>
+    <string name="widget_stale">Last updated %1$s · open app to refresh</string>
+    <string name="widget_a11y">%1$d steps today of %2$d goal, updated %3$s</string>
+</resources>
