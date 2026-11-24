@@ -35,7 +35,15 @@ jobs:
           target: google_apis
           profile: pixel_6
           disable-animations: true
-          script: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/screenshots_test.dart -d emulator-5554 --dart-define=DEMO_DATA=true --dart-define=ADS_ENABLED=false
+          script: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/screenshots_test.dart -d emulator-5554 --dart-define=DEMO_DATA=true --dart-define=ADS_ENABLED=false > drive.log 2>&1 || (tail -c 60000 drive.log; exit 1)
+      - name: Publish log
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          touch drive.log
+          gh release delete store-screenshots-log --yes --cleanup-tag || true
+          gh release create store-screenshots-log drive.log --prerelease --target "$GITHUB_SHA" --title "Screenshot run log" --notes "log"
       - name: Publish screenshots
         env:
           GH_TOKEN: ${{ github.token }}
