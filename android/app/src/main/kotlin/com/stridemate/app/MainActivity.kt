@@ -1,10 +1,12 @@
 package com.stridemate.app
 
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import com.stridemate.app.steps.StepSampleWorker
 import com.stridemate.app.steps.StepSensorReader
 import com.stridemate.app.steps.StepStore
+import com.stridemate.app.steps.NotificationManagerCompatWrapper
 import com.stridemate.app.steps.StepTrackingService
 import com.stridemate.app.widget.StepWidgetProvider
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -73,6 +75,30 @@ class MainActivity : FlutterFragmentActivity() {
                 "setDailyGoal" -> {
                     StepStore.get(ctx).setDailyGoal((call.argument<Number>("goal") ?: 8000).toLong())
                     result.success(true)
+                }
+                // Test-only: simulates walking on emulators (no step sensor) for the
+                // Play foreground-service demo video. Ignored in release builds.
+                "demoFeed" -> {
+                    val debuggable = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+                    if (!debuggable) {
+                        result.success(false)
+                    } else {
+                        val add = (call.argument<Number>("steps") ?: 0).toLong()
+                        io.execute {
+                            val store = StepStore.get(ctx)
+                            store.demoAdd(add)
+                            val now = System.currentTimeMillis()
+                            val today = store.todayLocal()
+                            if (store.backgroundEnabled()) {
+                                NotificationManagerCompatWrapper.notify(
+                                    ctx, StepTrackingService.NOTIFICATION_ID,
+                                    StepTrackingService.buildNotification(ctx, today, now)
+                                )
+                            }
+                            StepWidgetProvider.pushPhoneSteps(ctx, today, now)
+                            runOnUiThread { result.success(true) }
+                        }
+                    }
                 }
                 "refreshWidget" -> {
                     StepWidgetProvider.refresh(ctx)

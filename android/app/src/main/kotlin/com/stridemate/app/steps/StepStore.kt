@@ -81,6 +81,16 @@ class StepStore private constructor(context: Context) :
         ).use { c -> return if (c.moveToFirst()) c.getLong(0) else 0L }
     }
 
+    /** Test-only (debuggable builds): add simulated steps to the current hour. */
+    @Synchronized
+    fun demoAdd(steps: Long) {
+        val now = System.currentTimeMillis()
+        val hour = StepCounterLogic.hourStart(now)
+        val db = writableDatabase
+        db.execSQL("INSERT OR IGNORE INTO hourly(hour_ms, steps, updated_ms) VALUES(?, 0, ?)", arrayOf<Any>(hour, now))
+        db.execSQL("UPDATE hourly SET steps = steps + ?, updated_ms = ? WHERE hour_ms = ?", arrayOf<Any>(steps, now, hour))
+    }
+
     fun lastReadingMs(): Long = prefs.getLong("last_reading_ms", 0L)
 
     fun prune(olderThanMs: Long) {
