@@ -3,6 +3,11 @@
 # emulator (emulator-5554). Output: fgs-demo.mp4. Used by .github/workflows/fgs-video.yml
 set -u
 PKG=com.stridemate.app
+# Let the freshly booted emulator settle and hide system "isn't responding" pop-ups.
+adb shell settings put global hide_error_dialogs 1
+adb shell settings put global anr_show_background 0
+sleep 45
+adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null 2>&1
 adb logcat -c
 # Keep runtime permissions granted so no system dialog interrupts the demo.
 ( while true; do
