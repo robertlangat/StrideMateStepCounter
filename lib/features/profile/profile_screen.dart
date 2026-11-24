@@ -183,12 +183,6 @@ class ProfileScreen extends StatelessWidget {
             Card(
               child: Column(children: [
                 ListTile(
-                  leading: const Icon(Icons.mail_outline),
-                  title: const Text('Contact support'),
-                  subtitle: Text(AppConfig.supportEmail),
-                  onTap: () => launchUrl(Uri(scheme: 'mailto', path: AppConfig.supportEmail, query: 'subject=StrideMate')),
-                ),
-                ListTile(
                   leading: const Icon(Icons.description_outlined),
                   title: const Text('Terms of Use'),
                   onTap: () => launchUrl(Uri.parse(AppConfig.termsUrl), mode: LaunchMode.externalApplication),
