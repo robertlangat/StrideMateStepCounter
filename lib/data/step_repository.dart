@@ -39,6 +39,9 @@ class StepRepository extends ChangeNotifier {
   String get today => dayKey(DateTime.now());
 
   Future<void> init() async {
+    // Called from a widget's initState: let the first frame finish before any
+    // listener is notified (notifying during build is an error).
+    await Future<void>.delayed(Duration.zero);
     settings.ensureTrackingSince();
     restDays = await db.restDays();
     goalChanges = await db.goalHistory();

@@ -19,7 +19,10 @@ void main() {
 
   testWidgets('store screenshots', (tester) async {
     app.main();
-    await settle(tester, 8);
+    for (var i = 0; i < 120 && find.text('History').evaluate().isEmpty; i++) {
+      await settle(tester, 1);
+    }
+    await settle(tester, 4);
     await binding.convertFlutterSurfaceToImage();
     await settle(tester, 2);
     await binding.takeScreenshot('01_today');
