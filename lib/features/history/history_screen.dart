@@ -167,6 +167,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           SegmentedButton<HistoryRange>(
+            // No tick on the selected segment: it squeezed "Month" onto two lines.
+            showSelectedIcon: false,
             segments: const [
               ButtonSegment(value: HistoryRange.day, label: Text('Day')),
               ButtonSegment(value: HistoryRange.week, label: Text('Week')),
